@@ -27,7 +27,8 @@ COPY container.gitconfig /root/.gitconfig
 ENV PATH="$PATH:/willow/.local/bin"
 WORKDIR /willow
 
-ENV ADF_VER="willow-main-2024010900"
+# TODO tag before merging to main
+ENV ADF_VER="faddb6f693916c47205ad00825b314e95ca7831e"
 RUN \
     cd /opt/esp/idf && \
     curl https://raw.githubusercontent.com/toverainc/esp-adf/$ADF_VER/idf_patches/idf_v5.1_freertos.patch | patch -p1
