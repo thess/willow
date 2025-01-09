@@ -140,12 +140,12 @@ check_deps() {
 
 generate_speech_commands() {
     rm -rf build/srmodels
-    /usr/bin/python3 speech_commands/generate_commands.py
+    #/usr/bin/python3 speech_commands/generate_commands.py
 
     if [ -r "$WILLOW_PATH"/speech_commands/commands_en.txt ]; then
         echo "Linking custom speech commands"
         ln -sf "$WILLOW_PATH"/speech_commands/commands_en.txt \
-            "$WILLOW_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
+            "$ADF_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
     fi
 }
 
@@ -153,7 +153,7 @@ generate_nvs() {
     SSID=$(grep CONFIG_WIFI_SSID sdkconfig | cut -d'=' -f2 | tr -d '"')
     PASSWORD=$(grep CONFIG_WIFI_PASSWORD sdkconfig | cut -d'=' -f2 | tr -d '"')
     WAS_URL=$(grep CONFIG_WILLOW_WAS_URL sdkconfig | cut -d'=' -f2 | tr -d '"')
-    echo -n "key,type,encoding,value
+    echo "key,type,encoding,value
 WAS,namespace,,
 URL,data,string,$WAS_URL
 WIFI,namespace,,
@@ -177,7 +177,7 @@ install() {
     git submodule update --init components/esp-adf-libs
 
     # Setup esp-sr
-    cd $WILLOW_PATH/components
+    cd $ADF_PATH/components
     git clone https://github.com/espressif/esp-sr.git
     cd esp-sr
     git checkout "$ESP_SR_VER"
@@ -239,6 +239,12 @@ fullclean)
     check_container
     check_deps
     idf.py fullclean
+;;
+
+gencmds)
+    check_container
+    check_deps
+    generate_speech_commands
 ;;
 
 build)
