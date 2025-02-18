@@ -250,7 +250,7 @@ gencmds)
 build)
     check_container
     check_deps
-    [ "$CI" ] || generate_speech_commands
+    [ "$MULTINET" ] && generate_speech_commands
     if [ $2 ]; then
         echo "Adding timestamp to dev build"
         TS=$(date '+%d-%m-%Y_%H:%M:%S')
