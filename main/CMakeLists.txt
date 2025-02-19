@@ -1,3 +1,41 @@
+set(COMPONENT_SRCS
+    "audio.c"
+    "config.c"
+    "display.c"
+    "endpoint/hass.c"
+    "endpoint/openhab.c"
+    "endpoint/rest.c"
+    "http.c"
+    "i2c.c"
+    "input.c"
+    "log.c"
+    "lv_img_hand_left.c"
+    "network.c"
+    "ota.c"
+    "slvgl.c"
+    "system.c"
+    "tasks.c"
+    "timer.c"
+    "ui.c"
+    "was.c"
+    "main.c"
+)
+set(COMPONENT_ADD_INCLUDEDIRS .)
+set(COMPONENT_PRIV_REQUIRES
+    app_update
+    audio_board
+    audio_hal
+    audio_pipeline
+    audio_recorder
+    audio_sal
+    audio_stream
+    esp_http_client
+    esp_peripherals
+    esp_websocket_client
+    input_key_service
+    spiffs
+)
+
 if(CONFIG_WILLOW_ETHERNET)
     set(WILLOW_ETHERNET_SRC_DIRS "net")
 endif()
