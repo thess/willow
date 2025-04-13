@@ -2,6 +2,7 @@
 name: meta
 
 env:
+  GHCR_URL: "ghcr.io/${{ github.repository }}"
   GH_TOKEN: ${{ github.token }}
 
 on:
@@ -10,7 +11,7 @@ on:
     branches:
       - 'main'
       - 'release/**'
-    tag:
+    tags:
       - '*'
 
 jobs:
@@ -20,11 +21,17 @@ jobs:
     outputs:
       check_container_image: ${{ steps.check_container_image.outputs.result }}
       container_any_changed: ${{ steps.changed_files_yaml.outputs.container_any_changed }}
+      ghcr_url: ${{ steps.lower.outputs.ghcr_url }}
       image_any_changed: ${{ steps.changed_files_yaml.outputs.image_any_changed }}
       metadata_json: ${{ steps.metadata.outputs.json }}
       metadata_labels: ${{ steps.metadata.outputs.labels }}
       metadata_tags: ${{ steps.metadata.outputs.tags }}
     steps:
+      - name: lowercase GHCR_URL
+        id: lower
+        run: |
+          echo "ghcr_url=${GHCR_URL@L}" >> $GITHUB_OUTPUT
+
       - uses: actions/checkout@v4
         with:
           # fetch full history to be able to gather changed files in all new commits
@@ -52,7 +59,7 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v5
         with:
-          images: "ghcr.io/${{ github.repository }}"
+          images: ${{ steps.lower.outputs.ghcr_url }}
           tags: |
             type=ref,event=tag
             type=ref,event=pr
@@ -96,4 +103,4 @@ jobs:
     uses: ./.github/workflows/build-willow.yml
     needs: trigger_workflow
     with:
-      container-image: ${{ needs.trigger_workflow.outputs.check_container_image && fromJSON(needs.trigger_workflow.outputs.metadata_json).tags[0] || 'ghcr.io/toverainc/willow:main' }}
+      container-image: ${{ needs.trigger_workflow.outputs.check_container_image && fromJSON(needs.trigger_workflow.outputs.metadata_json).tags[0] || format('{0}:main', needs.trigger_workflow.outputs.ghcr_url) }}

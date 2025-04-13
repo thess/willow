@@ -36,6 +36,8 @@ jobs:
       dist_filename: "willow-dist-${{ matrix.device }}.bin"
       ota_filename: "willow-ota-${{ matrix.device }}.bin"
       partitions_filename: "willow-partitions-${{ matrix.device }}"
+    permissions:
+      packages: read
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -104,9 +106,14 @@ jobs:
     if: github.ref_type == 'tag'
     runs-on: ubuntu-22.04
     needs: build-willow-dist
+    permissions:
+      contents: write
+      packages: read
     steps:
       - name: download artifacts
         uses: actions/download-artifact@v4
+        with:
+          pattern: '!*.dockerbuild'
 
       - name: pwd
         run: pwd
@@ -122,4 +129,4 @@ jobs:
         with:
           allowUpdates: false
           artifacts: "sha256sums.txt,willow-dist-*/willow-dist-*.bin,willow-ota-*/willow-ota-*.bin"
-          prerelease: ${{ contains(github.ref, 'delete') || contains(github.ref, 'pre') || contains(github.ref, 'rc') }}
+          prerelease: ${{ contains(github.ref, 'delete') || contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'pre') || contains(github.ref, 'rc') }}
